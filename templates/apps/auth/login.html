@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Reklamachilar kabinetiga kirish</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f7f7fb;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-yellow {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-grey {
+            background-color: #f0f0f0;
+            color: black;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .checkbox input {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 10px;
+            top: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Reklamachilar kabinetiga kirish</h2>
+
+    <form action="{% url 'login1' %}" method="post">
+        {% csrf_token %}
+        <div id="form-section">
+            <!-- Add name attributes and use Django form fields if available -->
+            <input type="email" name="email" id="phone2" placeholder="??@gmail.com" required>
+            <div class="password-toggle">
+                <input type="password" name="password" id="password" placeholder="Parolni kiriting" required>
+                <span class="password-toggle-btn" onclick="togglePassword()">👁️</span>
+            </div>
+            <div class="checkbox">
+                <input type="checkbox" id="terms2" required>
+                <label for="terms2">Men <a href="#">foydalanish shartlari</a> bilan tanishdim</label>
+            </div>
+            <button class='submit' type="submit">Tizimga kirish</button>
+            <button class="btn-grey" type="button" onclick="window.location.href='{% url 'login' %}'"
+                    style="background: yellow">
+                SMS kod orqali kirish
+            </button>
+        </div>
+    </form>
+
+    <div class="footer">
+        <a href="#">Maxfiylik siyosati</a> |
+        <a href="#">Foydalanish shartlari</a>
+        <br>Copyright © 2020 Barcha huquqlar himoyalangan
+    </div>
+</div>
+
+<script>
+    function showPasswordLogin() {
+        document.getElementById('form-section').style.display = 'none';
+        document.getElementById('password-section').style.display = 'block';
+    }
+
+    function showSMSLogin() {
+        document.getElementById('password-section').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+    }
+
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+        } else {
+            passwordInput.type = "password";
+        }
+    }
+
+    function showPasswordForm() {
+        alert('SMS kod yuborildi (bu faqat frontend dizaynidir)');
+    }
+
+    function submitLogin() {
+        alert('Tizimga kirdingiz! (bu faqat frontend dizaynidir)');
+    }
+</script>
+
+</body>
+</html>

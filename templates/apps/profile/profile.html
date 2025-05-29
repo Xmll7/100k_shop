@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shaxsiy Ma'lumotlar</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: #1e293b;
+            color: #fff;
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            color: #fff;
+            text-align: left;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar button:hover, .sidebar button.active {
+            background-color: #334155;
+        }
+
+        .main {
+            margin-left: 320px;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .profile-card {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .profile-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+            margin-right: 20px;
+        }
+
+        .upload-btn {
+            background-color: #2563eb;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .id-box {
+            background: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 20px;
+            color: #f59e0b;
+            text-align: center;
+        }
+
+        .form-section {
+            margin-top: 30px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row input, .form-row select {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            background-color: #f3f4f6;
+        }
+
+        .save-btn {
+            background-color: #fbbf24;
+            color: black;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .save-btn:hover {
+            background-color: #facc15;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <button class="active">👤 Shaxsiy ma'lumotlar</button>
+{#    <button>📞 Telefon raqamni o‘zgartirish</button>#}
+    <button><a href="{% url 'password-update' %}">🔒 Parolni o‘zgartirish </a></button>
+    <button>💬 Telegram bilan bog‘lash</button>
+{#    <button>💻 Target uchun API</button>#}
+</div>
+<form action="{% url 'profile-update-page'  user.pk %}" method="post">
+    {% csrf_token %}
+    <div class="main">
+        <h1>Shaxsiy ma'lumotlar</h1>
+
+        {#        <div class="profile-card">#}
+        {#            <div style="display: flex; align-items: center;">#}
+        {#                <div class="profile-img"></div>#}
+        {#                <button class="upload-btn">📸 Rasmni o‘zgartirish</button>#}
+        {#            </div>#}
+        {##}
+        {#        </div>#}
+
+        <div class="form-section">
+            <div class="form-row">
+                <input type="email" value="{{ user.email }}" readonly>
+            </div>
+            <div class="form-row">
+                <input type="text" placeholder="Ismingiz" value="{{ user.first_name }}" name="first_name">
+                <input type="text" placeholder="Familiya" value="{{ user.last_name }}" name="last_name">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="region">Region:</label>
+                    <select id="region" name="address" class="form-control">
+                        <option value="">---------</option>
+                        {% for region in regions %}
+                            <option value="{{ region.id }}" {% if user.address == region.id %}selected{% endif %}>
+                                {{ region.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="district">District:</label>
+                    <select id="district" name="district" class="form-control" disabled>
+                        {% if user.district %}
+                            <option value="{{ user.district.id }}" selected>{{ user.district.name }}</option>
+                        {% else %}
+                            <option value="">---------</option>
+                        {% endif %}                    </select>
+                </div>
+
+            </div>
+            <button class="save-btn" type="submit">O‘zgarishlarni saqlash</button>
+        </div>
+    </div>
+</form>
+
+
+</body>
+
+<script>
+    document.getElementById('region').addEventListener('change', function () {
+        const regionId = this.value;
+        const districtSelect = document.getElementById('district');
+
+        districtSelect.disabled = true;
+        districtSelect.innerHTML = '<option>Yuklanmoqda...</option>';
+
+        fetch(`/districts/?region_id=${regionId}`)
+            .then(res => res.json())
+            .then(data => {
+                districtSelect.innerHTML = '<option value="">---------</option>';
+                data.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = d.name;
+                    districtSelect.appendChild(opt);
+                });
+                districtSelect.disabled = false;
+            })
+            .catch(() => {
+                districtSelect.innerHTML = '<option value="">Xatolik yuz berdi</option>';
+            });
+    });
+</script>
+
+</html>

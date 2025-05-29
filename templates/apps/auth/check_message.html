@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reklamachilar kabinetiga kirish</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 320px;
+        }
+
+        .container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .checkbox-group {
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .checkbox-group input {
+            margin-right: 8px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background-color: #ffe082;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<form action="{% url 'check_email' %}" method="POST">
+    {% csrf_token %}
+    <div class="container">
+        <h1>Reklamachilar kabinetiga kirish</h1>
+
+        <!-- Email input -->
+        <div class="input-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Emailni kiriting" name="email" required>
+        </div>
+
+        <!-- SMS Code input -->
+        <div class="input-group">
+            <label for="sms">SMS kod:</label>
+            <input type="text" id="sms" placeholder="SMS kodni kiriting" name="sms" required>
+        </div>
+
+        <!-- Password input -->
+        <div class="input-group">
+            <label for="password">Parol:</label>
+            <input type="password" id="password" placeholder="Parolni kiriting" name="password" required>
+        </div>
+
+        <!-- Password Confirm input -->
+        <div class="input-group">
+            <label for="password_confirm">Parolni tasdiqlang:</label>
+            <input type="password" id="password_confirm" placeholder="Parolni tasdiqlang" name="password_confirm"
+                   required>
+        </div>
+
+        <!-- Checkbox for terms -->
+        <div class="checkbox-group">
+            <input type="checkbox" id="terms" required>
+            <label for="terms">Men <a href="#">foydalanish shartlari</a> bilan tanishdim</label>
+        </div>
+
+        <!-- Submit button -->
+        <button class="btn btn-primary" type="submit">Tizimga kirish</button>
+        <button class="btn btn-secondary" type="button" onclick="window.location.href='#'">Shaxsiy
+            parol orqali kirish
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <a href="#">Maxfiylik siyosati</a> |
+        <a href="#">Foydalanish shartlari</a><br>
+        Copyright © 2020 Barcha huquqlar himoyalangan
+    </div>
+</form>
+
+</div>
+</div>
+</form>
+
+
+<script>
+    function login() {
+        const phone = document.getElementById('phone').value;
+        const sms = document.getElementById('sms').value;
+        const termsChecked = document.getElementById('terms').checked;
+
+        if (!termsChecked) {
+            alert("Iltimos, foydalanish shartlari bilan tanishing va tasdiqlang.");
+            return;
+        }
+
+        if (sms.trim() === "") {
+            alert("Iltimos, SMS kodni kiriting.");
+            return;
+        }
+
+        // Shu yerda haqiqiy tizimga kirish logikasi bo'lishi mumkin
+        alert("Tizimga muvaffaqiyatli kirdingiz!");
+    }
+
+    function loginWithPassword() {
+        alert("Shaxsiy parol orqali kirish funksiyasi hali tayyor emas.");
+    }
+</script>
+</body>
+</html>

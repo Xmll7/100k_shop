@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Parolni O'zgartirish</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: #1e293b;
+            color: #fff;
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            color: #fff;
+            text-align: left;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar button:hover {
+            background-color: #334155;
+        }
+
+        .sidebar button.active {
+            background-color: #334155;
+            font-weight: bold;
+        }
+
+        .main {
+            margin-left: 320px;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .password-form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            background-color: #f3f4f6;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background-color: #fff;
+        }
+
+        .password-requirements {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .btn {
+            background-color: #2563eb;
+            color: white;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #16a34a;
+            font-size: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <button><a href="{% url 'profile-update-page' user.pk %}">👤 Shaxsiy ma'lumotlar</a></button>
+{#    <button>📞 Telefon raqamni o‘zgartirish</button>#}
+    <button class="active">🔒 Parolni o‘zgartirish</button>
+    <button>💬 Telegram bilan bog‘lash</button>
+{#    <button>💻 Target uchun API</button>#}
+</div>
+
+<div class="main">
+    <h1>Parolni o'zgartirish</h1>
+
+    <form action="{% url 'password-update' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="old_password">Joriy parol</label>
+            <input type="password" id="currentPassword" name="old_password" required>
+            <div class="error-message" id="old_password">Noto'g'ri parol kiritildi</div>
+        </div>
+
+        <div class="form-group">
+            <label for="new_password">Yangi parol</label>
+            <input type="password" id="newPassword" name="new_password" required>
+            <div class="password-requirements">
+                Parol kamida 8 belgidan iborat bo'lishi va kamida bitta raqam yoki maxsus belgi qatnashishi kerak
+            </div>
+            <div class="error-message" id="newPasswordError">Parol talablarga javob bermaydi</div>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Yangi parolni tasdiqlash</label>
+            <input type="password" id="confirmPassword" name="new_password_confirm" required>
+            <div class="error-message" id="confirmPasswordError">Parollar mos kelmadi</div>
+        </div>
+
+        <button type="submit" class="btn">Parolni yangilash</button>
+
+        <div class="success-message" id="successMessage">
+            Parolingiz muvaffaqiyatli o'zgartirildi!
+        </div>
+    </form>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,336 @@
+{% extends 'apps/profile/base.html' %}
+{% load static %}
+̌{% load custom_tags %}
+{% block body %}
+    <style>/* General Styles */
+    body {
+        font-family: 'Arial', sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+    }
+
+    .page-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .page-content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    /* Card Styles */
+    .card {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .card__header {
+        background: #f0f0f0;
+        padding: 15px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .card__body {
+        padding: 15px;
+    }
+
+    .card ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .card li {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .key {
+        font-weight: bold;
+    }
+
+    .value {
+        color: #555;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .btn-primary {
+        background-color: #1a73e8;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #155ab6;
+    }
+
+    /* Table Styles */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    .custom-table th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+    }
+
+    .custom-table td {
+        background-color: #ffffff;
+    }
+
+    /* No Data Styles */
+    .custom-table__no-data {
+        text-align: center;
+        padding: 20px;
+        color: #888;
+    }
+
+    .custom-table__no-data svg {
+        margin-bottom: 10px;
+    }
+
+    /* Pagination Styles */
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .display-records {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 10px;
+    }
+
+    ul[role="navigation"] {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    li {
+        display: inline-block;
+    }
+
+    li a {
+        text-decoration: none;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #1a73e8;
+        transition: background 0.3s, border-color 0.3s;
+    }
+
+    li a:hover {
+        background-color: #f0f0f0;
+        border-color: #ccc;
+    }
+
+    .previous.disabled a,
+    .next.disabled a {
+        color: #ccc;
+        pointer-events: none;
+    }
+
+    .selected a {
+        background-color: #1a73e8;
+        color: #ffffff;
+        border-color: #1a73e8;
+    }
+
+    .selected a:hover {
+        background-color: #155ab6;
+    }
+    </style>
+    <div class="page-wrapper">
+        <main class="page-content" style="position: relative;">
+            <div class="payment">
+                <div class="container">
+                    <div class="row g-20">
+                        <div class="card col">
+                            <div class="card__header">Mening hisobim</div>
+                            <div class="card__body">
+                                <ul>
+                                    <li><p class="key">ID raqamingiz:</p>
+                                        <p class="value"><strong>{{ user.id }}</strong></p></li>
+                                    <li><p class="key">Asosiy balansda:</p>
+                                        <p class="value">{{ user.balance }}</p></li>
+{#                                    <li><p class="key">To'lab berildi:</p>#}
+                                        <p class="value"></p></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card col">
+                            <p class="card__header">To'lovga sorov berish formasi</p>
+                            <div class="card__body">
+                                <form method="post" action="{% url 'payment' %}">
+                                    {% csrf_token %}
+                                    <div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="card_number">Karta raqamingizni
+                                                kiriting</label>
+                                            <input class="form-control" id="card_number" type="text"
+                                                   inputmode="numeric" pattern="[0-9\s]*"
+                                                   name="card_number" maxlength="19"
+                                                   value="{{ card_number|card_number_slicer }}"
+                                                   placeholder="1234 5678 9012 3456"
+                                                   oninput="formatCardNumber(this)">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Summani kiriting</label>
+                                            <input name="amount" type="number" class="form-control"
+                                                   autocomplete="off" placeholder="Summani kiriting"
+                                                   min="1" max="9999999999">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary --with-loader">
+                                            <p>Tasdiqlash</p>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mantine-1q1idfv"></div>
+                    <div class="custom-table" data-columns="5">
+                        <div class="custom-table__wrapper">
+                            <div class="custom-table__animate" style="height: auto;">
+                                <div class="rc-table">
+                                    <div class="rc-table-container">
+                                        <div class="rc-table-content">
+                                            <table style="table-layout: auto;">
+                                                <colgroup>
+                                                    <col style="width: 200px;">
+                                                </colgroup>
+                                                <thead class="rc-table-thead">
+                                                <tr>
+                                                    <th class="rc-table-cell" scope="col">Sana</th>
+                                                    <th class="rc-table-cell" scope="col">Hisob raqam</th>
+                                                    <th class="rc-table-cell" scope="col">Summa</th>
+                                                    <th class="rc-table-cell" scope="col">Holat</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="rc-table-tbody">
+
+                                                {% if payments %}
+                                                    {% for payment in payments %}
+                                                        <tr>
+                                                            <td class="rc-table-cell">{{ payment.date|date:"Y-m-d H:i" }}</td>
+                                                            <td class="rc-table-cell">{{ payment.card_number|card_number_slicer }}</td>
+                                                            <td class="rc-table-cell">{{ payment.amount }}</td>
+                                                            <td class="rc-table-cell">
+                                                                {% if payment.status %}
+                                                                   <p> Tolangan</p>
+                                                                {% else %}
+                                                                    <p>To‘lanmagan</p>
+                                                                {% endif %}
+                                                            </td>
+
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr class="rc-table-placeholder">
+                                                        <td class="rc-table-cell" colspan="5">
+                                                            <div class="custom-table__no-data">
+                                                                <!-- Siz yuborgan SVG kodi shu yerda qoladi -->
+                                                                <svg width="184" height="152" viewBox="0 0 184 152"
+                                                                     xmlns="http://www.w3.org/2000/svg">
+                                                                    <!-- SVG kontenti... -->
+                                                                </svg>
+                                                                <p>Malumot topilmadi</p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+{#                    <div class="pagination">#}
+{#                        <div class="display-records"><p>Ko'rsatilgan ma'lumotlar: - jami 0</p></div>#}
+{#                        <ul role="navigation" aria-label="Pagination">#}
+{#                            <li class="previous disabled"><a class=" " tabindex="-1" role="button" aria-disabled="true"#}
+{#                                                             aria-label="Previous page" rel="prev"><span#}
+{#                                    class="pagination__prev"><svg xmlns="http://www.w3.org/2000/svg"#}
+{#                                                                  viewBox="0 0 384 512"><path#}
+{#                                    d="M362.7 203.9l-159.1 144c-6.125 5.469-15.31 5.469-21.44 0L21.29 203.9C14.73 197.1 14.2 187.9 20.1 181.3C26.38 174.4 36.5 174.5 42.73 180.1L192 314.5l149.3-134.4c6.594-5.877 16.69-5.361 22.62 1.188C369.8 187.9 369.3 197.1 362.7 203.9z"></path></svg></span></a>#}
+{#                            </li>#}
+{#                            <li class="selected"><a rel="canonical" role="button" tabindex="-1"#}
+{#                                                    aria-label="Page 1 is your current page" aria-current="page">1</a>#}
+{#                            </li>#}
+{#                            <li class="next disabled"><a class=" " tabindex="-1" role="button" aria-disabled="true"#}
+{#                                                         aria-label="Next page" rel="next"><span#}
+{#                                    class="pagination__next"><svg xmlns="http://www.w3.org/2000/svg"#}
+{#                                                                  viewBox="0 0 384 512"><path#}
+{#                                    d="M362.7 203.9l-159.1 144c-6.125 5.469-15.31 5.469-21.44 0L21.29 203.9C14.73 197.1 14.2 187.9 20.1 181.3C26.38 174.4 36.5 174.5 42.73 180.1L192 314.5l149.3-134.4c6.594-5.877 16.69-5.361 22.62 1.188C369.8 187.9 369.3 197.1 362.7 203.9z"></path></svg></span></a>#}
+{#                            </li>#}
+{#                        </ul>#}
+{#                    </div>#}
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        function formatCardNumber(input) {
+            // Remove all non-digit characters
+            let value = input.value.replace(/\D/g, '');
+
+            // Add space after every 4 digits
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+            // Update the input value
+            input.value = value.trim();
+
+            // Enforce max length of 16 digits + 3 spaces = 19 characters
+            if (input.value.length > 19) {
+                input.value = input.value.substring(0, 19);
+            }
+        }
+    </script>
+
+{% endblock %}

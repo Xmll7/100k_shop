@@ -1,0 +1,14 @@
+# Python bytecode fayllar
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual muhit papkasi
+venv/
+env/
+
+# Maxfiy fayllar
+.env
+
+# Log fayllar
+*.log

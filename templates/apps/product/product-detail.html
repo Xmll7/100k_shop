@@ -1,0 +1,287 @@
+{% extends 'apps/include_base/base.html' %}
+{% load static %}
+
+{% block body %}
+    <main class="client-template">
+        <section class="main">
+
+            <div class="container py-3">
+                <div class="row align-items-center">
+                    <div class="col my-3 pr-3">
+                        <h1 class="h4 font-weight-bold mb-0">{{ product.short_description }}</h1>
+                    </div>
+                    <div class="col-auto my-3 text-right">
+                        <strong class="position-price1">
+                            {{ product.price }} so'm
+                        </strong>
+                        <div class="text-warning">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+{#                        <div class="owl-carousel owl-theme content_linear_card_body_indicators">#}
+                            {% for vid in product.video.all %}
+                                <div class="item-video">
+                                    <video width="100%" controls>
+                                        <source src="{{ vid.video.url }}" type="video/mp4">
+                                        Sizning brovseringiz ushbu videoni oqiy olmaydi
+                                    </video>
+                                </div>
+                            {% endfor %}
+                            <div class="item">
+                                <img loading="lazy" class="lazyload"
+                                     src="https://100k.uz/themes/stock/assets/img/loading.gif"
+                                     data-src="{{ product.images.first.image.url }}" alt="card"/>
+{#                            </div>#}
+                        </div>
+
+                        <div class="productShop d-none d-md-block d-lg-block d-xl-block mt-4">
+                            <div class="row align-items-center">
+                                <div class="col-2">
+{#                                    <a href="/store/103"><img#}
+{#                                            src="https://100k.uz/themes/stock/assets/img/d-avatar.png"#}
+{#                                            alt="clothes"/></a>#}
+                                </div>
+                                <div class="col pl-3">
+                                    <a href="/store/103"> Greatstuff shop </a>
+                                    <div class="text-warning">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{% url 'home' %}" class="sk-btn sk-btn--hover">Do'konning sahifasi</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="orderFormSection" class="col-md-6 pl-md-4 mb-4">
+                        <div class="orderForm sk-form d-flex flex-column justify-content-between"
+                             style="min-height:100%;">
+                            <div>
+                                <h2 class="h3 font-weight-bold mb-4"><a href=""> Buyurtma
+                                    berish</a></h2>
+
+                                <p class="mb-3"> Mahsulot narxi: <strong
+                                        class="pricetag position-price2">{{ product.price }} so'm</strong></p>
+
+                                <div class="alert alert-info">
+                                    <strong>Yetqazib berish mutlaqo bepul</strong>
+                                    tuman markazidagi qabul qilish punktigacha.
+                                    To'lovni mahsulotni olgandan so'ng amalga oshirasiz.
+
+                                </div>
+                            </div>
+                            <form action="{% url 'product-order' product.pk %}" method="post">
+                                {% csrf_token %}
+                                <div class="my-3">
+                                    <input type="hidden" name="product" value="{{ product.pk }}"/>
+                                    <div class="form-group">
+                                        <input class="form-control needclear" name="name"
+                                               placeholder="Ismingiz" type="text" required/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input class="my-phone-mask form-control needclear" name="phone_number"
+                                               id="phone_number" placeholder="Telefon raqamingiz" type="text" required/>
+                                    </div>
+
+                                    <div id="partialCountryState">
+                                        <div class="form-group">
+                                            <select required class="form-control" name="region">
+                                                <option value="" selected="selected">Hududni tanlang ⬇️</option>
+
+                                                {% for region in regions %}
+                                                    <option value="{{ region.id }}">{{ region.name }}</option>
+                                                {% endfor %}
+
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="text-center">
+                                                <button
+                                                        data-attach-loading type="submit" style="max-width: 100%"
+                                                        class="sk-btn sk-btn--primary sk-btn--block sk-btn--lg">
+                                                    Buyurtma berish
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a href="#productDescription" class="nav-link active" data-toggle="tab">Batafsil ma'lumot</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#productReviews" class="nav-link" data-toggle="tab"> Xaridorlar fikrlari </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="productDesc py-5">
+                <div class="container px-3">
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="productDescription">
+                            <div>{{ product.long_description }}</div>
+                        </div>
+                        <div class="tab-pane fade" id="productReviews">
+                            <div class="row align-items-center">
+                                <div class="col mb-4">
+                                    <h2 class="font-weight-bold">Mijozlar tomonidan qoldirilgan izohlar</h2>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="mb-4">
+                                        <a href="#" data-toggle="modal" data-target="#exampleModal">Izoh qoldirish</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul id="productReviewsList" class="commentsList">
+                                <p class="text-center text-muted" style="font-size: 19px;"><br><br> Ushbu mahsulotga
+                                    izohlar hali qoldirilmagan. </p>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <footer class="siteFooter mt-auto">
+            <div class="container py-4">
+                <div class="row">
+                    <div class="col-lg col-sm-6">
+                        <ul class="nav flex-column">
+                            <li>
+                                <a href="/profile" class="nav-link"> Mening kabinetim </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg col-sm-6">
+                        <ul class="nav flex-column">
+                            <li>
+                                <a href="/pages/about" class="nav-link"> Biz haqimizda </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg col-sm-6">
+                        <ul class="nav flex-column">
+                            <li>
+                                <a href="/pages/contacts" class="nav-link"> Aloqa uchun </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg col-sm-6">
+                        <ul class="nav flex-column">
+                            <li>
+                                <a href="/pages/privacy-policy" target="_blank" class="nav-link">Ommaviy oferta</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="container py-2">
+                    <div class="row">
+                        <div class="col-auto">
+                            2016-2021 - 100K.UZ
+                        </div>
+                        <div class="col"></div>
+                        <div class="col-auto">
+                            Barcha huquqlar himoyalangan
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <script src="https://kit.fontawesome.com/43236b6dfa.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/imask"></script>
+    <script src="https://100k.uz/themes/stock/assets/js/bundle.js"></script>
+    <script src="https://100k.uz/themes/stock/assets/lazysizes/lazysizes.min.js"></script>
+    <script src="https://100k.uz/themes/stock/assets/owlcarousel/owl.carousel.min.js"></script>
+    <script src="{% static 'apps/jquery.inputmask.bundle.js' %}"></script>
+    <script src="{% static 'apps/custom.js' %}"></script>
+    <script src="{% static 'apps/framework-extras.js' %}"></script>
+    <link rel="stylesheet" property="stylesheet" href="{% static 'apps/framework-extras.css' %}">
+
+    <script>
+        $(".owl-carousel").owlCarousel({
+            items: 1,
+            loop: true,
+            video: true,
+            animateOut: 'fadeOut',
+            autoplay: false,
+            autoplayTimeout: 5000,
+            autoplayHoverPause: true,
+        });
+
+        let inputs = document.querySelectorAll(".position-btn input");
+        const price1 = document.querySelector(".position-price1");
+        const price2 = document.querySelector(".position-price2");
+
+        inputs.forEach(input => {
+            input.addEventListener("click", function (e) {
+                let price = e.target.getAttribute("data-price");
+                price = Intl.NumberFormat().format(price);
+                price1.innerHTML = `${price} so'm`;
+                price2.innerHTML = `${price} so'm`;
+            });
+        });
+    </script>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        // Agar siz Ajax yoki fetch bilan so'rovlar yuborayotgan bo'lsangiz
+        $.ajaxSetup({
+            headers: {"X-CSRFToken": csrftoken}
+        });
+    </script>
+{% endblock %}

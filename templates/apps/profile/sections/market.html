@@ -1,0 +1,284 @@
+{% extends 'apps/profile/base.html' %}
+
+{% block body %}
+    <style>
+
+
+        .product-card__img img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .modal__content {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 500px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal__overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .modal__close-icon {
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .product-card__details strong {
+            color: #333;
+        }
+
+        .categories {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+        }
+
+        .categories-item {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            background-color: #E1F5FE;
+            color: #007BFF;
+        }
+
+        .categories-item.active {
+            background-color: #B3E5FC;
+        }
+
+        .search-wrap {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-wrap input {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ddd;
+            flex: 1;
+        }
+
+        .search-wrap button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: #2F8AF5;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .product__cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            width: calc(33.333% - 1rem);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card a {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card__img {
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .card__img img {
+            width: 100%;
+            height: auto;
+        }
+
+        .card__details {
+            padding: 1rem;
+        }
+
+        .card__details h2 {
+            font-size: 1.25rem;
+            margin: 0 0 0.5rem;
+        }
+
+        .card__details p {
+            margin: 0.5rem 0;
+        }
+
+        .card__details .store-link {
+            color: #2F8AF5;
+            text-decoration: none;
+        }
+
+        .card__details .store-link:hover {
+            text-decoration: underline;
+        }
+
+        .card__button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: #2F8AF5;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .card__button:hover {
+            background-color: #1e7cd6;
+        }
+    </style>
+
+    <div class="page-wrapper">
+        <main class="page-content">
+            <div class="market">
+                <div class="container">
+                    <div class="block-info" style="margin-bottom: 1rem; text-align: center;">
+                        <span>
+                            Maxsulot reklamasini olish uchun 
+                            <a href="https://t.me/yuzkabot" target="_blank" rel="noreferrer"
+                               style="color: #2F8AF5; text-decoration: none; font-weight: bold;">
+                                @yuzkabot
+                            </a> 
+                            telegram botga ulaning.
+                        </span>
+                    </div>
+                    <h3 style="text-align: center; margin-bottom: 1rem;">Hozirda sotuvda bor mahsulotlar</h3>
+
+                    <!-- Swiper slider or another way to display product posts -->
+                    <div class="swiper swiper-initialized swiper-horizontal product-posts" style="margin-bottom: 2rem;">
+                        <div class="swiper-wrapper"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="search-wrap">
+                            <input type="text" class="form-control" autocomplete="off" maxlength="255" name="query"
+                                   value="" placeholder="Izlash...">
+                            <button type="submit">Izlash</button>
+                        </div>
+                    </div>
+
+                    <div class="categories">
+                        <div class="categories-item active">Yangi 🕒</div>
+                        <div class="categories-item">TOP ⭐</div>
+                        <div class="categories-item">Zaxira
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 style="display: inline; width: 18px; height: 18px; rotate: 90deg;">
+                                <path d="M7.82843 10.9999H20V12.9999H7.82843L13.1924 18.3638L11.7782 19.778L4 11.9999L11.7782 4.22168L13.1924 5.63589L7.82843 10.9999Z"
+                                      fill="#2F8AF5"></path>
+                            </svg>
+                        </div>
+                        <div class="categories-item">Mening maxsulotlarim</div>
+                    </div>
+
+                    <div class="product__cards">
+                        {% for product in products %}
+                            <div class="card">
+                                <div class="card__img">
+                                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                                </div>
+                                <div class="card__details">
+                                    <h2 class="c-red">{{ product.name }}</h2>
+                                    <p class="price">{{ product.price }} so'm</p>
+                                    <p>To'lov: <strong>{{ product.payment }} so'm</strong></p>
+                                    <p>Sotuvchi: <a href="https://t.me/jonik_admin" target="_blank" rel="noreferrer"
+                                                    class="store-link">Jonik Xitoy</a></p>
+                                    <p>Zaxirada: <span class="c-green">{{ product.quantity }} ta</span></p>
+                                    <p>Operator: <strong>Bor</strong></p>
+                                    <p>Kreativlar: <a href="#" class="c-blue">Ko‘rsatish</a></p>
+                                    <p class="c-red">👉 Reklama posti</p>
+                                    <button class="card__button" data-product-id="{{ product.id }}">
+                                        Oqim yaratish
+                                    </button>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p>Mahsulotlar topilmadi.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modal Overlay -->
+        <div id="modal__overlay" class="modal__overlay"></div>
+
+        <!-- Modal Content -->
+        <div id="modal-content" class="modal__content">
+            <div class="modal-header">
+                <h5 class="modal-title">Oqim yaratish</h5>
+                <span id="close" class="modal__close-icon" aria-label="Close">×</span>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'stream-form' %}" class="form-class">
+                    {% csrf_token %}
+                    <input name="product" type="hidden" id="hidden_product" value="">
+                    <input name="user" type="hidden" id="hidden_owner" value="{{ request.user.pk }}">
+                    <div class="form-group">
+                        <label for="id_title">Oqim nomi</label>
+                        <input type="text" name="name" class="form-control" placeholder="Nomi" required id="id_title">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_discount">Chegirma</label>
+                        <input type="text" name="discount" class="form-control" placeholder="Chegirma" id="id_discount">
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Oqim yaratish">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Event listener for opening the modal and setting hidden fields
+            document.querySelectorAll('.card__button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const productId = this.getAttribute('data-product-id');
+                    document.getElementById('hidden_product').value = productId;
+                    document.getElementById('modal-content').style.display = 'block';
+                    document.getElementById('modal__overlay').style.display = 'block';
+                });
+            });
+
+            // Event listener for closing the modal
+            document.getElementById('close').addEventListener('click', function () {
+                document.getElementById('modal-content').style.display = 'none';
+                document.getElementById('modal__overlay').style.display = 'none';
+            });
+
+            // Close modal when overlay is clicked
+            document.getElementById('modal__overlay').addEventListener('click', function () {
+                document.getElementById('modal-content').style.display = 'none';
+                document.getElementById('modal__overlay').style.display = 'none';
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator - Buyurtmalarni Tasdiqlash</title>
+    <style>
+        /* CSS qismi */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .search-input, .filter-select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            flex-grow: 1;
+            min-width: 200px;
+            font-size: 14px;
+        }
+
+        .reset-btn {
+            padding: 10px 15px;
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .reset-btn:hover {
+            background-color: #e67e22;
+        }
+
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-id {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .order-date {
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+
+        .order-status {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .status-new { background-color: #3498db; }
+        .status-accepted { background-color: #2ecc71; }
+        .status-delivering { background-color: #f39c12; }
+        .status-delivered { background-color: #27ae60; }
+        .status-callback { background-color: #9b59b6; }
+        .status-spam { background-color: #e74c3c; }
+        .status-returned { background-color: #95a5a6; }
+        .status-hold { background-color: #34495e; }
+        .status-archived { background-color: #7f8c8d; }
+
+        .customer-info h3 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+
+        .customer-info p {
+            margin: 5px 0;
+            color: #7f8c8d;
+        }
+
+        .region {
+            font-weight: bold;
+            color: #3498db !important;
+            font-size: 0.95em;
+        }
+
+        .product-info {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+        }
+
+        .product-info h4 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 1em;
+        }
+
+        .product-info p {
+            margin: 5px 0;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            color: white;
+        }
+
+        .confirm-btn { background-color: #2ecc71; }
+        .confirm-btn:hover { background-color: #27ae60; }
+
+        .reject-btn { background-color: #e74c3c; }
+        .reject-btn:hover { background-color: #c0392b; }
+
+        .callback-btn { background-color: #3498db; }
+        .callback-btn:hover { background-color: #2980b9; }
+
+        .status-select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex-grow: 1;
+            min-width: 150px;
+            font-size: 0.85em;
+            background-color: white;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .orders-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-section {
+                flex-direction: column;
+            }
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .notification.success {
+            background-color: #2ecc71;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Buyurtmalarni Tasdiqlash</h1>
+
+        <div class="filter-section">
+            <input type="text" id="searchInput" placeholder="Ism yoki telefon raqam boʻyicha qidirish..." class="search-input">
+            <select id="regionFilter" class="filter-select">
+                <option value="">Hamma viloyatlar</option>
+                <option value="andijon">Andijon</option>
+                <option value="buxoro">Buxoro</option>
+                <option value="fargona">Fargʻona</option>
+                <option value="jizzax">Jizzax</option>
+                <option value="xorazm">Xorazm</option>
+                <option value="namangan">Namangan</option>
+                <option value="navoiy">Navoiy</option>
+                <option value="qashqadaryo">Qashqadaryo</option>
+                <option value="qoraqalpogiston">Qoraqalpogʻiston</option>
+                <option value="samarqand">Samarqand</option>
+                <option value="sirdaryo">Sirdaryo</option>
+                <option value="surxondaryo">Surxondaryo</option>
+                <option value="toshkent">Toshkent</option>
+            </select>
+            <button id="resetFilters" class="reset-btn">Filtrlarni tozalash</button>
+        </div>
+
+        <div class="orders-grid" id="ordersContainer">
+            <div class="loading">
+                <p>Buyurtmalar yuklanmoqda...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <!-- JavaScript qismi -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ordersContainer = document.getElementById('ordersContainer');
+            const searchInput = document.getElementById('searchInput');
+            const regionFilter = document.getElementById('regionFilter');
+            const resetFilters = document.getElementById('resetFilters');
+            const notification = document.getElementById('notification');
+
+            // Buyurtmalarni yuklash
+            function loadOrders() {
+                fetch('/api/orders/pending/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            renderOrders(data);
+                        } else {
+                            ordersContainer.innerHTML = `
+                                <div class="no-orders">
+                                    <p>Tasdiqlash uchun yangi buyurtmalar mavjud emas</p>
+                                </div>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Xatolik:', error);
+                        ordersContainer.innerHTML = `
+                            <div class="no-orders">
+                                <p>Buyurtmalarni yuklashda xatolik yuz berdi</p>
+                            </div>
+                        `;
+                    });
+            }
+
+            // Buyurtmalarni chiqarish
+            function renderOrders(orders) {
+                ordersContainer.innerHTML = '';
+
+                orders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = 'order-card';
+                    orderCard.dataset.region = order.region;
+                    orderCard.dataset.status = order.status;
+
+                    const statusClass = `status-${order.status}`;
+                    const statusDisplay = getStatusDisplay(order.status);
+                    const regionDisplay = getRegionDisplay(order.region);
+
+                    orderCard.innerHTML = `
+                        <div class="order-header">
+                            <span class="order-id">#${order.id}</span>
+                            <span class="order-date">${formatDate(order.created_at)}</span>
+                            <span class="order-status ${statusClass}">${statusDisplay}</span>
+                        </div>
+
+                        <div class="order-body">
+                            <div class="customer-info">
+                                <h3>${order.name}</h3>
+                                <p>${order.phone_number}</p>
+                                <p class="region">${regionDisplay}</p>
+                            </div>
+
+                            <div class="product-info">
+                                <h4>Mahsulot:</h4>
+                                <p>${order.product_name}</p>
+                                <p>Narx: ${order.product_price} soʻm</p>
+                            </div>
+                        </div>
+
+                        <div class="order-actions">
+                            <button class="action-btn confirm-btn" data-order-id="${order.id}">Tasdiqlash</button>
+                            <button class="action-btn reject-btn" data-order-id="${order.id}">Rad etish</button>
+                            <button class="action-btn callback-btn" data-order-id="${order.id}">Qayta qoʻngʻiroq</button>
+                            <select class="status-select" data-order-id="${order.id}">
+                                <option value="new" ${order.status === 'new' ? 'selected' : ''}>Yangi</option>
+                                <option value="accepted" ${order.status === 'accepted' ? 'selected' : ''}>Qabul qilindi</option>
+                                <option value="delivering" ${order.status === 'delivering' ? 'selected' : ''}>Yetkazilmoqda</option>
+                                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Yetkazildi</option>
+                                <option value="callback" ${order.status === 'callback' ? 'selected' : ''}>Qayta aloqa</option>
+                                <option value="spam" ${order.status === 'spam' ? 'selected' : ''}>Spam</option>
+                                <option value="returned" ${order.status === 'returned' ? 'selected' : ''}>Qaytarilgan</option>
+                                <option value="hold" ${order.status === 'hold' ? 'selected' : ''}>Kutilmoqda</option>
+                                <option value="archived" ${order.status === 'archived' ? 'selected' : ''}>Arxivlangan</option>
+                            </select>
+                        </div>
+                    `;
+
+                    ordersContainer.appendChild(orderCard);
+                });
+
+                // Har bir buyurtma uchun event listenerlar qo'shish
+                document.querySelectorAll('.confirm-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const orderId = this.dataset.orderId;
+                        confirmOrder(orderId);
+                    });
+                });
+
+                document.querySelectorAll('.reject-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const orderId = this.dataset.orderId;
+                        rejectOrder(orderId);
+                    });
+                });
+
+                document.querySelectorAll('.callback-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const orderId = this.dataset.orderId;
+                        setCallbackStatus(orderId);
+                    });
+                });
+
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', function() {
+                        const orderId = this.dataset.orderId;
+                        const newStatus = this.value;
+                        updateOrderStatus(orderId, newStatus);
+                    });
+                });
+            }
+
+            // Buyurtma tasdiqlash
+            function confirmOrder(orderId) {
+                fetch(`/api/orders/${orderId}/confirm/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Buyurtma muvaffaqiyatli tasdiqlandi!', 'success');
+                        loadOrders();
+                    } else {
+                        showNotification('Xatolik: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Xatolik:', error);
+                    showNotification('Server xatosi yuz berdi', 'error');
+                });
+            }
+
+            // Buyurtmani rad etish
+            function rejectOrder(orderId) {
+                fetch(`/api/orders/${orderId}/reject/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Buyurtma rad etildi!', 'success');
+                        loadOrders();
+                    } else {
+                        showNotification('Xatolik: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Xatolik:', error);
+                    showNotification('Server xatosi yuz berdi', 'error');
+                });
+            }
+
+            // Qayta qo'ng'iroq statusi
+            function setCallbackStatus(orderId) {
+                updateOrderStatus(orderId, 'callback');
+            }
+
+            // Statusni yangilash
+            function updateOrderStatus(orderId, status) {
+                fetch(`/api/orders/${orderId}/update_status/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: status })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Status muvaffaqiyatli oʻzgartirildi!', 'success');
+                        loadOrders();
+                    } else {
+                        showNotification('Xatolik: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Xatolik:', error);
+                    showNotification('Server xatosi yuz berdi', 'error');
+                });
+            }
+
+            // Filtrlash funksiyalari
+            function filterOrders() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const regionValue = regionFilter.value;
+                const orderCards = document.querySelectorAll('.order-card');
+
+                orderCards.forEach(card => {
+                    const namePhone = card.querySelector('.customer-info').textContent.toLowerCase();
+                    const region = card.dataset.region;
+
+                    const matchesSearch = namePhone.includes(searchTerm);
+                    const matchesRegion = regionValue === '' || region === regionValue;
+
+                    if (matchesSearch && matchesRegion) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            searchInput.addEventListener('input', filterOrders);
+            regionFilter.addEventListener('change', filterOrders);
+
+            resetFilters.addEventListener('click', function() {
+                searchInput.value = '';
+                regionFilter.value = '';
+                filterOrders();
+            });
+
+            // Notification ko'rsatish
+            function showNotification(message, type) {
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+
+            // Yordamchi funksiyalar
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('uz-UZ') + ' ' + date.toLocaleTimeString('uz-UZ');
+            }
+
+            function getStatusDisplay(status) {
+                const statusMap = {
+                    'new': 'Yangi',
+                    'accepted': 'Qabul qilindi',
+                    'delivering': 'Yetkazilmoqda',
+                    'delivered': 'Yetkazildi',
+                    'callback': 'Qayta aloqa',
+                    'spam': 'Spam',
+                    'returned': 'Qaytarilgan',
+                    'hold': 'Kutilmoqda',
+                    'archived': 'Arxivlangan'
+                };
+                return statusMap[status] || status;
+            }
+
+            function getRegionDisplay(region) {
+                const regionMap = {
+                    'andijon': 'Andijon',
+                    'buxoro': 'Buxoro',
+                    'fargona': 'Fargʻona',
+                    'jizzax': 'Jizzax',
+                    'xorazm': 'Xorazm',
+                    'namangan': 'Namangan',
+                    'navoiy': 'Navoiy',
+                    'qashqadaryo': 'Qashqadaryo',
+                    'qoraqalpogiston': 'Qoraqalpogʻiston',
+                    'samarqand': 'Samarqand',
+                    'sirdaryo': 'Sirdaryo',
+                    'surxondaryo': 'Surxondaryo',
+                    'toshkent': 'Toshkent'
+                };
+                return regionMap[region] || region;
+            }
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            // Dastlabki buyurtmalarni yuklash
+            loadOrders();
+        });
+    </script>
+</body>
+</html>
